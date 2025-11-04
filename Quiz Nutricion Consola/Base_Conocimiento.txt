@@ -1,0 +1,108 @@
+========================================
+BASE DE CONOCIMIENTO (CONCEPTUAL)
+========================================
+
+--- Hechos (Grupos de Alimentos) ---
+
+* Verduras: Zanahoria, espinaca, tomate, pepino, lechuga, coliflor, brócoli, calabaza.
+* Frutas: Manzana, plátano, naranja, pera, mango, fresa, sandía, uva, papaya, melón, piña.
+* Cereales: Arroz, tortilla, pan, avena, pasta, maíz, galletas integrales, amaranto, quinoa, trigo, cereal integral.
+* Leguminosas: Frijol, lenteja, garbanzo, haba, soya, edamame.
+* Origen Animal: Pollo, pescado, huevo, carne, queso, leche, yogurt, atún.
+* Bebidas Saludables: Agua, infusión de hierbas, agua con limón, té verde, agua mineral.
+* Bebidas Azucaradas: Refresco, jugos industrializados, bebidas energéticas, bebidas deportivas, té helado azucarado, café con azúcar, batidos con azúcar.
+
+--- Leyes (Reglas Lógicas) ---
+
+* Ley 1: Si un alimento pertenece al grupo de leguminosas o de origen animal, entonces aporta proteínas.
+* Ley 2: Si una persona consume alimentos de los tres grupos (frutas/verduras, cereales y leguminosas/animales), entonces su plato es balanceado.
+* Ley 3: Si una persona consume solo alimentos de un grupo, entonces su plato no es balanceado.
+* Ley 4: Si el alimento elegido no pertenece al Plato del Buen Comer, entonces no es saludable.
+* Ley 5: Si un alimento es procesado o contiene azúcares añadidos, entonces no se recomienda su consumo frecuente.
+* Ley 7: Si una persona come pollo, frijoles y arroz acompañados de verduras, entonces está cumpliendo con el Plato del Buen Comer.
+
+
+========================================
+BASE DE CONOCIMIENTO (IMPLEMENTACIÓN PYTHON)
+========================================
+
+--- 1. REGLAS (Para el Motor de Inferencia) ---
+
+REGLAS = [
+    # Reglas de Hábitos Positivos
+    {'if': ['come_frutas_frecuente', 'come_verduras_frecuente'], 'then': 'buen_consumo_vegetales'},
+    {'if': ['consume_agua_natural'], 'then': 'buena_hidratacion'},
+    {'if': ['come_leguminosas_frecuente'], 'then': 'buen_consumo_proteinas'},
+    {'if': ['come_origen_animal_frecuente'], 'then': 'buen_consumo_proteinas'},
+    {'if': ['come_cereales_integrales'], 'then': 'buen_consumo_cereales'},
+
+    # Reglas de Hábitos a Mejorar (Específicas)
+    {'if': ['consume_bebidas_azucaradas'], 'then': 'riesgo_alto_azucar'},
+    {'if': ['prefiere_papas_o_dulces'], 'then': 'MENSAJE_ORIENTACION_SNACKS'},
+    {'if': ['come_chatarra_semanal'], 'then': 'MENSAJE_ORIENTACION_FRITOS'},
+    
+    # Reglas de Conclusión (Diagnóstico)
+    {'if': ['buen_consumo_vegetales', 'buena_hidratacion', 'buen_consumo_proteinas'], 'then': 'dieta_balanceada'},
+    
+    # Reglas que definen una dieta no balanceada
+    {'if': ['riesgo_alto_azucar'], 'then': 'dieta_no_balanceada'},
+    {'if': ['MENSAJE_ORIENTACION_SNACKS'], 'then': 'dieta_no_balanceada'},
+    {'if': ['MENSAJE_ORIENTACION_FRITOS'], 'then': 'dieta_no_balanceada'},
+    {'if': ['evita_verduras'], 'then': 'dieta_no_balanceada'},
+
+    # Regla para el peor escenario
+    {'if': ['prefiere_papas_o_dulces', 'consume_bebidas_azucaradas'], 'then': 'dieta_muy_desbalanceada'},
+    {'if': ['come_chatarra_semanal', 'consume_bebidas_azucaradas'], 'then': 'dieta_muy_desbalanceada'},
+
+    # Reglas para Mensajes (el resultado final)
+    {'if': ['dieta_balanceada'], 'then': 'MENSAJE_FELICITACION'},
+    {'if': ['dieta_no_balanceada'], 'then': 'MENSAJE_ORIENTACION_GENERAL'},
+    {'if': ['riesgo_alto_azucar'], 'then': 'MENSAJE_ORIENTACION_AZUCAR'},
+    {'if': ['dieta_muy_desbalanceada'], 'then': 'MENSAJE_ORIENTACION_COMPLETA'},
+]
+
+
+--- 2. HECHOS INICIALES (Generados por el Quiz) ---
+
+PREGUNTAS_QUIZ = [
+    {
+        'pregunta': 'Cuando tienes mucha sed, ¿qué se te antoja más?',
+        'opciones': [
+            ('Agua natural', 'consume_agua_natural'),
+            ('Jugo de cajita o refresco', 'consume_bebidas_azucaradas'),
+            ('Agua de sabor (jamaica, limón)', 'consume_agua_natural'),
+        ]
+    },
+    {
+        'pregunta': 'En la comida, ¿qué comes más seguido?',
+        'opciones': [
+            ('Pollo, pescado o carne', 'come_origen_animal_frecuente'),
+            ('Frijoles, lentejas o garbanzos', 'come_leguminosas_frecuente'),
+            ('Casi no como de esos', 'ninguno_proteina'),
+        ]
+    },
+    {
+        'pregunta': '¿Qué tan seguido comes verduras (brócoli, zanahoria, lechuga)?',
+        'opciones': [
+            ('¡En casi todas mis comidas!', 'come_verduras_frecuente'),
+            ('Algunas veces a la semana', 'come_verduras_ocasional'),
+            ('Casi nunca, no me gustan', 'evita_verduras'),
+        ]
+    },
+    {
+        'pregunta': 'Si pudieras elegir un snack, ¿cuál sería?',
+        'opciones': [
+            ('Una fruta (manzana, plátano)', 'come_frutas_frecuente'),
+            ('Unas papitas o galletas dulces', 'prefiere_papas_o_dulces'),
+            ('Un yogurt o un sándwich', 'snack_balanceado'),
+        ]
+    },
+    {
+        'pregunta': '¿Con qué frecuencia comes pizza, hamburguesas o alimentos fritos?',
+        'opciones': [
+            ('Casi nunca (quizás una vez al mes)', 'evita_chatarra'),
+            ('Varias veces por semana', 'come_chatarra_semanal'),
+            ('Solo en fiestas (1 o 2 veces al mes)', 'evita_chatarra'),
+        ]
+    }
+]
