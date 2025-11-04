@@ -1,5 +1,7 @@
 # 🍎 Nutri-Quiz Lógico (Versión de Consola) 🖥️
 
+## En lo siguiente de describira el proyecto, los objetivos y componentes del proyecto. 
+
 ## 1. Descripción del Proyecto
 
 **Nutri-Quiz Lógico** es una aplicación de consola desarrollada en Python. El proyecto está diseñado como un quiz interactivo para niños de 8 a 12 años, con el objetivo de evaluar y orientar sus hábitos alimenticios basándose en los principios del "Plato del Buen Comer".
@@ -30,4 +32,5 @@ Es el "cerebro" del sistema. Es una lista de diccionarios donde cada diccionario
 
 ```python
 # Ejemplo de una regla
+
 {'if': ['consume_bebidas_azucaradas'], 'then': 'riesgo_alto_azucar'}
