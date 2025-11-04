@@ -34,3 +34,4 @@ Es el "cerebro" del sistema. Es una lista de diccionarios donde cada diccionario
 # Ejemplo de una regla
 
 {'if': ['consume_bebidas_azucaradas'], 'then': 'riesgo_alto_azucar'}
+
