@@ -2,40 +2,31 @@
 
 # --- 1. BASE DE CONOCIMIENTOS (REGLAS) ---
 # Se han añadido más reglas para las nuevas preguntas
+import tkinter as tk
+from tkinter import messagebox
+from tkinter import font 
+import random
+
 REGLAS = [
     # Reglas de Hábitos Positivos
     {'if': ['come_frutas_frecuente', 'come_verduras_frecuente'], 'then': 'buen_consumo_vegetales'},
     {'if': ['consume_agua_natural'], 'then': 'buena_hidratacion'},
     {'if': ['come_leguminosas_frecuente'], 'then': 'buen_consumo_proteinas'},
     {'if': ['come_origen_animal_frecuente'], 'then': 'buen_consumo_proteinas'},
-    {'if': ['come_cereales_integrales'], 'then': 'buen_consumo_cereales'},
-    {'if': ['desayuno_completo'], 'then': 'buen_habito_desayuno'},
-    {'if': ['come_variado'], 'then': 'buena_variedad'},
-    {'if': ['come_pescado_frecuente'], 'then': 'buen_consumo_omega3'},
 
-    # Reglas de Hábitos a Mejorar (Específicas)
+    # Reglas de Hábitos a Mejorar
     {'if': ['consume_bebidas_azucaradas'], 'then': 'riesgo_alto_azucar'},
     {'if': ['prefiere_papas_o_dulces'], 'then': 'MENSAJE_ORIENTACION_SNACKS'},
     {'if': ['come_chatarra_semanal'], 'then': 'MENSAJE_ORIENTACION_FRITOS'},
-    {'if': ['come_cereales_refinados'], 'then': 'MENSAJE_ORIENTACION_CEREALES'}, # Nueva
-    {'if': ['evita_desayuno'], 'then': 'MENSAJE_ORIENTACION_DESAYUNO'}, # Nueva
-    {'if': ['desayuno_incompleto'], 'then': 'MENSAJE_ORIENTACION_DESAYUNO'}, # Nueva
-    {'if': ['evita_frutas'], 'then': 'MENSAJE_ORIENTACION_FRUTAS'}, # Nueva
-    {'if': ['come_poca_variedad'], 'then': 'MENSAJE_ORIENTACION_VARIEDAD'}, # Nueva
-
+    
     # Reglas de Conclusión (Diagnóstico)
-    # Hacemos que "dieta_balanceada" sea más difícil de obtener (más realista)
-    {'if': ['buen_consumo_vegetales', 'buena_hidratacion', 'buen_consumo_proteinas', 'buen_habito_desayuno', 'buena_variedad'], 'then': 'dieta_balanceada'},
+    {'if': ['buen_consumo_vegetales', 'buena_hidratacion', 'buen_consumo_proteinas'], 'then': 'dieta_balanceada'},
     
     # Reglas que definen una dieta no balanceada
     {'if': ['riesgo_alto_azucar'], 'then': 'dieta_no_balanceada'},
     {'if': ['MENSAJE_ORIENTACION_SNACKS'], 'then': 'dieta_no_balanceada'},
     {'if': ['MENSAJE_ORIENTACION_FRITOS'], 'then': 'dieta_no_balanceada'},
     {'if': ['evita_verduras'], 'then': 'dieta_no_balanceada'},
-    {'if': ['MENSAJE_ORIENTACION_CEREALES'], 'then': 'dieta_no_balanceada'}, # Nueva
-    {'if': ['MENSAJE_ORIENTACION_DESAYUNO'], 'then': 'dieta_no_balanceada'}, # Nueva
-    {'if': ['MENSAJE_ORIENTACION_FRUTAS'], 'then': 'dieta_no_balanceada'}, # Nueva
-    {'if': ['MENSAJE_ORIENTACION_VARIEDAD'], 'then': 'dieta_no_balanceada'}, # Nueva
 
     # Regla para el peor escenario
     {'if': ['prefiere_papas_o_dulces', 'consume_bebidas_azucaradas'], 'then': 'dieta_muy_desbalanceada'},
@@ -56,253 +47,276 @@ def motor_inferencia_adelante(hechos_iniciales):
     """
     hechos = set(hechos_iniciales)
     hechos_nuevos_encontrados = True
-
-    print("\n--- [Motor de Inferencia Iniciado] ---")
     while hechos_nuevos_encontrados:
         hechos_nuevos_encontrados = False
-        
         for regla in REGLAS:
-            premisa_cumplida = True
-            for condicion in regla['if']:
-                if condicion not in hechos:
-                    premisa_cumplida = False
-                    break
-            
-            conclusion = regla['then']
-            
-            if premisa_cumplida and conclusion not in hechos:
-                # ¡Dispara la regla!
-                print(f"[Inferencia]: {regla['if']} -> {conclusion}") 
-                hechos.add(conclusion)
-                hechos_nuevos_encontrados = True
-                
-    print("--- [Motor de Inferencia Terminado] ---\n")
+            premisa_cumplida = all(condicion in hechos for condicion in regla['if'])
+                conclusion = regla ['then']
+                if premisa_cumplida and conclusion not in hechos:
+                    hechos.add(conclusion)
+                    hechos_nuevos_encontrados = True
     return hechos
 
 
-# --- 3. PREGUNTAS DEL QUIZ (10 PREGUNTAS) ---
+# --- 3. PREGUNTAS DEL QUIZ (con Emojis, SIN PUNTOS) ---
+# Formato: ('texto de opción', 'hecho')
 PREGUNTAS_QUIZ = [
-    # --- Pregunta 1 ---
     {
-        'pregunta': 'Cuando tienes mucha sed, ¿qué se te antoja más?',
+        'pregunta': 'Cuando tienes mucha sed, ¿Qué se te antoja más? 💧',
         'opciones': [
-            ('Agua natural', 'consume_agua_natural'),
-            ('Jugo de cajita o refresco', 'consume_bebidas_azucaradas'),
-            ('Agua de sabor (jamaica, limón)', 'consume_agua_natural'),
+            ('Agua natural 🧊', 'consume_agua_natural'),
+            ('Jugo de cajita o refresco 🥤', 'consume_bebidas_azucaradas'),
+            ('Agua de sabor (jamaica, limón) 🍋', 'consume_agua_natural'),
         ]
     },
-    # --- Pregunta 2 ---
     {
-        'pregunta': 'En la comida, ¿qué comes más seguido?',
+        'pregunta': 'En la comida, ¿Qué comes más seguido? 🍗🥗',
         'opciones': [
-            ('Pollo, pescado o carne', 'come_origen_animal_frecuente'),
-            ('Frijoles, lentejas o garbanzos', 'come_leguminosas_frecuente'),
-            ('Casi no como de esos', 'ninguno_proteina'),
+            ('Pollo, pescado o carne 🥩', 'come_origen_animal_frecuente'),
+            ('Frijoles, lentejas o garbanzos 🌱', 'come_leguminosas_frecuente'),
+            ('Casi no como de esos 🤷‍♂️', 'ninguno_proteina'),
         ]
     },
-    # --- Pregunta 3 ---
     {
-        'pregunta': '¿Qué tan seguido comes verduras (brócoli, zanahoria, lechuga)?',
+        'pregunta': '¿Qué tan seguido comes verduras (brócoli, zanahoria, lechuga)? 🥕🥦🥬',
         'opciones': [
-            ('¡En casi todas mis comidas!', 'come_verduras_frecuente'),
-            ('Algunas veces a la semana', 'come_verduras_ocasional'),
-            ('Casi nunca, no me gustan', 'evita_verduras'),
+            ('¡En casi todas mis comidas! ✅', 'come_verduras_frecuente'),
+            ('Algunas veces a la semana 🟡', 'come_verduras_ocasional'),
+            ('Casi nunca, no me gustan ❌', 'evita_verduras'),
         ]
     },
-    # --- Pregunta 4 ---
     {
-        'pregunta': 'Si pudieras elegir un snack, ¿cuál sería?',
+        'pregunta': 'Si pudieras elegir un snack, ¿uál sería? 🍎🍟',
         'opciones': [
-            ('Una fruta (manzana, plátano)', 'snack_fruta'), # Hecho cambiado para no colisionar
-            ('Unas papitas o galletas dulces', 'prefiere_papas_o_dulces'),
-            ('Un yogurt o un sándwich', 'snack_balanceado'),
+            ('Una fruta (manzana, plátano) 🍌', 'come_frutas_frecuente'),
+            ('Unas papitas o galletas dulces 🍪', 'prefiere_papas_o_dulces'),
+            ('Un yogurt o un sándwich 🥪', 'snack_balanceado'),
         ]
     },
-    # --- Pregunta 5 ---
     {
-        'pregunta': '¿Con qué frecuencia comes pizza, hamburguesas o alimentos fritos?',
+        'pregunta': '¿Con qué frecuencia comes pizza, hamburguesas o alimentos fritos? 🍕🍔🍟',
         'opciones': [
-            ('Casi nunca (quizás una vez al mes)', 'evita_chatarra'),
-            ('Varias veces por semana', 'come_chatarra_semanal'),
-            ('Solo en fiestas (1 o 2 veces al mes)', 'evita_chatarra_ocasional'),
-        ]
-    },
-    # --- Pregunta 6 (NUEVA) ---
-    {
-        'pregunta': 'Cuando comes pan o cereal, ¿cuál eliges más seguido?',
-        'opciones': [
-            ('Pan blanco o cereal de caja con azúcar', 'come_cereales_refinados'),
-            ('Pan integral, avena o cereal de fibra', 'come_cereales_integrales'),
-            ('Casi no como pan ni cereal', 'evita_cereales'),
-        ]
-    },
-    # --- Pregunta 7 (NUEVA) ---
-    {
-        'pregunta': '¿Qué haces normalmente en las mañanas?',
-        'opciones': [
-            ('Tomo un desayuno completo (ej. huevo, fruta, leche)', 'desayuno_completo'),
-            ('Solo como una galleta o un pan rápido', 'desayuno_incompleto'),
-            ('Casi nunca desayuno, se me hace tarde', 'evita_desayuno'),
-        ]
-    },
-    # --- Pregunta 8 (NUEVA) ---
-    {
-        'pregunta': 'Hablando de frutas (manzana, plátano, etc.), ¿cuántas comes al día?',
-        'opciones': [
-            ('¡Como dos o más! Me encantan.', 'come_frutas_frecuente'),
-            ('A veces como una', 'come_frutas_ocasional'),
-            ('Casi nunca, se me olvida', 'evita_frutas'),
-        ]
-    },
-    # --- Pregunta 9 (NUEVA) ---
-    {
-        'pregunta': 'En la semana, ¿tus comidas son...?',
-        'opciones': [
-            ('¡Muy variadas! Como de todo un poco.', 'come_variado'),
-            ('Casi siempre como lo mismo (ej. siempre pollo o siempre pasta)', 'come_poca_variedad'),
-            ('No estoy seguro', 'no_sabe_variedad'),
-        ]
-    },
-    # --- Pregunta 10 (NUEVA) ---
-    {
-        'pregunta': '¿Qué tan seguido comes pescado o atún?',
-        'opciones': [
-            ('¡Varias veces por semana!', 'come_pescado_frecuente'),
-            ('De vez en cuando (1 o 2 veces al mes)', 'come_pescado_ocasional'),
-            ('No me gusta / Casi nunca', 'evita_pescado'),
+            ('Casi nunca (una vez al mes) 💯', 'evita_chatarra'),
+            ('Varias veces por semana 😱', 'come_chatarra_semanal'),
+            ('Solo en fiestas (1 o 2 veces al mes) 🎉', 'evita_chatarra'),
         ]
     }
 ]
 
 
-# --- 4. FUNCIONES DE LA APLICACIÓN DE CONSOLA ---
+# --- 4. BASE DE CONSEJOS INTERMEDIOS ---
+CONSEJOS_INTERMEDIOS = {
+    'consume_bebidas_azucaradas': 
+        "¡Ojo! Las bebidas azucaradas tienen mucha azúcar que te quita energía. 🛑 Cámbialas por agua de sabor sin azúcar. ¡Tu cuerpo te lo agradecerá!",
+    'consume_agua_natural': 
+        "¡Excelente elección! El agua es el combustible más importante para tu cerebro y tus músculos. ¡Sigue hidratándote! 🥳",
+    'come_origen_animal_frecuente': 
+        "Las proteínas te ayudan a construir músculos fuertes. ¡Recuerda combinar con vegetales y leguminosas! 🥗",
+    'come_leguminosas_frecuente': 
+        "¡Muy bien! Frijoles y lentejas son súper alimentos que te dan energía y fibra. Son proteína vegetal de campeones. 🌱",
+    'evita_verduras': 
+        "¡Las verduras son tus súper protectores! 🛡️ Te dan vitaminas para no enfermarte. Prueba a comerlas en ensaladas divertidas.",
+    'come_verduras_frecuente': 
+        "¡Súper! Los colores de las verduras significan vitaminas diferentes. ¡Mientras más colores comas, más fuerte eres! 🌈",
+    'prefiere_papas_o_dulces': 
+        "Los snacks fritos y dulces son grasas malas. 🚫 La próxima vez, elige un snack divertido como fruta picada o palomitas naturales. 🍿",
+    'come_frutas_frecuente': 
+        "¡Genial! Las frutas son el 'dulce natural' y te dan mucha energía. ¡Come una diferente cada día! 🍎🍊",
+}
 
-def hacer_quiz():
-    """
-    Función principal que ejecuta el quiz en la consola.
-    """
-    hechos_recopilados = []
-    print("=================================")
-    print("  🍎 ¡Bienvenido al Nutri-Quiz! 🍎")
-    print("=================================")
-    print("Responde las siguientes 10 preguntas escribiendo el NÚMERO de la opción (ej. 1, 2 o 3).\n")
 
-    # Iterar por cada pregunta en la base de conocimientos
-    for i, pregunta_data in enumerate(PREGUNTAS_QUIZ):
-        print(f"\n--- Pregunta {i+1} de {len(PREGUNTAS_QUIZ)} ---")
-        print(f"{pregunta_data['pregunta']}")
+# --- 5. CLASE PARA LA VENTANA DE CONSEJOS PERSONALIZADA (Colores Vivos) ---
+class ConsejoWindow:
+    def __init__(self, parent, title, message):
+        self.top = tk.Toplevel(parent)
+        self.top.title("Consejo Nutricional")
+        self.top.transient(parent) 
+        self.top.grab_set()        
         
-        # Imprimir las opciones
-        for j, (texto, valor_hecho) in enumerate(pregunta_data['opciones']):
-            print(f"  {j+1}. {texto}")
+        # Centrar la ventana
+        parent.update_idletasks()
+        x = parent.winfo_x() + parent.winfo_width() // 2 - self.top.winfo_width() // 2
+        y = parent.winfo_y() + parent.winfo_height() // 2 - self.top.winfo_height() // 2
+        self.top.geometry(f"450x300+{x-150}+{y-100}") 
         
-        # Obtener y validar la respuesta del usuario
-        while True:
-            try:
-                respuesta_num_str = input("Tu respuesta (número): ")
-                respuesta_num = int(respuesta_num_str)
-                
-                # Validar que el número esté en el rango de opciones
-                if 1 <= respuesta_num <= len(pregunta_data['opciones']):
-                    # Obtener el "hecho" correspondiente
-                    indice = respuesta_num - 1
-                    hecho_seleccionado = pregunta_data['opciones'][indice][1]
-                    hechos_recopilados.append(hecho_seleccionado)
-                    print(f"¡Entendido! (Hecho: {hecho_seleccionado})")
-                    break # Salir del bucle while y pasar a la siguiente pregunta
-                else:
-                    print(f"¡Error! Por favor, escribe un número entre 1 y {len(pregunta_data['opciones'])}.")
-            except ValueError:
-                print("¡Error! Por favor, escribe solo el número de la opción.")
-            except Exception as e:
-                print(f"Ocurrió un error inesperado: {e}")
-
-    return hechos_recopilados
-
-def mostrar_resultado_consola(hechos_finales):
-    """
-    Imprime los resultados finales en la consola basado en los hechos inferidos.
-    """
-    print("=================================")
-    print("     TUS RESULTADOS 🥦")
-    print("=================================\n")
-
-    titulo_resultado = "¡Estos son tus resultados!"
-    mensaje_resultado = ""
-    
-    # Lógica para determinar el mensaje (ACTUALIZADA con nuevas reglas)
-    if 'MENSAJE_FELICITACION' in hechos_finales and 'MENSAJE_ORIENTACION_GENERAL' not in hechos_finales:
-        titulo_resultado = "¡¡Felicidades, Súper Nutri-Chef!! 🥦"
-        mensaje_resultado = "¡Tu alimentación es excelente! Sigue así, estás comiendo de forma muy balanceada y saludable.\n\n"
-        mensaje_resultado += "Recuerda que comer bien te da energía para jugar, aprender y crecer muy fuerte."
+        # COLORES VIVOS para la ventana de consejo
+        self.top.config(bg="#FFFDE7") # Fondo amarillo muy claro
         
-    elif 'MENSAJE_ORIENTACION_COMPLETA' in hechos_finales:
-        titulo_resultado = "¡Hora de un cambio, campeón! 🚀"
-        mensaje_resultado = "Parece que te gustan mucho las bebidas con azúcar y la comida chatarra.\n\n"
-        mensaje_resultado += "¡No te preocupes! Podemos mejorar. Intenta cambiar el refresco por agua de frutas y las papitas por un snack saludable (como una manzana o pepino).\n\n"
-        mensaje_resultado += "¡Tu cuerpo te lo agradecerá con más energía!"
+        # Fuentes personalizadas
+        consejo_font_titulo = font.Font(family="Arial Black", size=18, weight="bold")
+        consejo_font_mensaje = font.Font(family="Verdana", size=14, weight="bold")
+        consejo_font_boton = font.Font(family="Verdana", size=12)
 
-    elif 'MENSAJE_ORIENTACION_GENERAL' in hechos_finales:
-        titulo_resultado = "¡Puedes mejorar! 💪"
-        mensaje_resultado = "Vamos por buen camino, pero podemos mejorar algunas cosas.\n\n"
+        # Título del consejo
+        lbl_title = tk.Label(self.top, text=f"💡 {title}", font=consejo_font_titulo, bg="#FFFDE7", fg="#FF5722") 
+        lbl_title.pack(pady=(15, 5), padx=10)
+
+        # Mensaje del consejo
+        lbl_message = tk.Label(self.top, text=message, font=consejo_font_mensaje, bg="#FFFDE7", fg="#212121", wraplength=400)
+        lbl_message.pack(pady=10, padx=20)
         
-        # Lógica corregida para mensajes específicos
-        if 'MENSAJE_ORIENTACION_AZUCAR' in hechos_finales:
-            mensaje_resultado += "Recuerda que los refrescos y jugos tienen mucha azúcar. ¡Intenta tomar más agua natural!\n\n"
+        # Botón para cerrar
+        btn_ok = tk.Button(self.top, text="¡Entendido! 👍", command=self.top.destroy, 
+                           font=consejo_font_boton, bg="#FFEB3B", fg="#212121", 
+                           activebackground="#FFC107", relief="raised", borderwidth=2)
+        btn_ok.pack(pady=15)
         
-        if 'MENSAJE_ORIENTACION_SNACKS' in hechos_finales:
-            mensaje_resultado += "Las papitas y galletas son ricas, pero trata de no comerlas tan seguido. ¡Una fruta es un mejor snack!\n\n"
+        self.top.wait_window()
+
+# --- 6. LA APLICACIÓN DE QUIZ (INTERFAZ GRÁFICA) ---
+
+class NutriQuizApp:
+    def __init__(self, root):
+        self.root = root
+        self.root.title("Nutri-Quiz Lógico 🍎🥕") 
+        self.root.geometry("600x450")
         
-        if 'MENSAJE_ORIENTACION_FRITOS' in hechos_finales:
-            mensaje_resultado += "La pizza y las hamburguesas son deliciosas, pero es mejor dejarlas para ocasiones especiales. ¡Intenta comer más pollo o pescado hecho en casa!\n\n"
+        # --- Estilo y Fuentes ---
+        self.root.configure(bg="#E8F5E9") # Fondo: Verde Menta Claro
+        self.font_titulo = ("Arial Black", 22, "bold") 
+        self.font_pregunta = ("Verdana", 14)          
+        self.font_opcion = ("Verdana", 12, "bold") 
+        self.font_progreso = ("Verdana", 10, "bold") 
 
-        if 'evita_verduras' in hechos_finales:
-             mensaje_resultado += "¡Las verduras son súper poderosas! Intenta comer aunque sea un poquito cada día, ¡te sorprenderá lo ricas que pueden ser!\n\n"
+        self.indice_pregunta_actual = 0
+        self.hechos_recopilados = []
+        self.total_preguntas = len(PREGUNTAS_QUIZ)
         
-        # --- NUEVOS MENSAJES ---
-        if 'MENSAJE_ORIENTACION_CEREALES' in hechos_finales:
-             mensaje_resultado += "El pan blanco y los cereales de azúcar son ricos, pero no alimentan mucho. Prueba cambiarlos por pan integral o avena, ¡te darán más energía!\n\n"
-
-        if 'MENSAJE_ORIENTACION_DESAYUNO' in hechos_finales:
-             mensaje_resultado += "¡El desayuno es la comida más importante! No te lo saltes. Empezar el día con un buen desayuno te ayuda a tener energía y concentrarte en la escuela.\n\n"
-
-        if 'MENSAJE_ORIENTACION_FRUTAS' in hechos_finales:
-             mensaje_resultado += "¡Las frutas son como dulces saludables! Intenta comer al menos una o dos al día. Son deliciosas y te dan muchas vitaminas.\n\n"
+        self.opcion_seleccionada = tk.StringVar()
         
-        if 'MENSAJE_ORIENTACION_VARIEDAD' in hechos_finales:
-             mensaje_resultado += "Comer siempre lo mismo puede ser aburrido. ¡Intenta probar cosas nuevas! Comer alimentos de diferentes colores ayuda a que tu cuerpo tenga todas las defensas que necesita.\n\n"
+        # --- Crear widgets ---
+        self.label_titulo = tk.Label(root, text="¡Bienvenido al Nutri-Quiz! 🎉🥗", font=self.font_titulo, bg="#E8F5E9", fg="#388E3C") # Verde Esmeralda
+        self.label_titulo.pack(pady=20)
+        
+        # Progreso
+        self.label_progreso = tk.Label(root, text="", font=self.font_progreso, bg="#E8F5E9", fg="#388E3C")
+        self.label_progreso.pack(pady=(0, 10))
+        
+        self.label_pregunta = tk.Label(root, text="", font=self.font_pregunta, bg="#E8F5E9", fg="#388E3C", wraplength=550)
+        self.label_pregunta.pack(pady=5)
+        
+        self.frame_opciones = tk.Frame(root, bg="#E8F5E9")
+        self.frame_opciones.pack(pady=10)
+        
+        self.radio_buttons = []
+        for i in range(3): 
+            rb = tk.Radiobutton(self.frame_opciones, text="", variable=self.opcion_seleccionada,
+                                value="", font=self.font_opcion, bg="#FFB300", fg="#212121", # Botón: Amarillo Sol
+                                activebackground="#FF8F00", selectcolor="#FFB300", 
+                                indicatoron=0, 
+                                relief="raised", borderwidth=3, 
+                                width=40, height=2,
+                                tristatevalue="x")
+            rb.pack(pady=5)
+            self.radio_buttons.append(rb)
+            
+        self.boton_siguiente = tk.Button(root, text="Siguiente 👉", font=self.font_pregunta, 
+                                         bg="#FF5722", fg="white", # Botón Siguiente: Naranja Coral
+                                         activebackground="#E64A19",
+                                         command=self.siguiente_pregunta)
+        self.boton_siguiente.pack(pady=20)
+        
+        self.mostrar_pregunta()
 
-    else:
-        mensaje_resultado = "¡Gracias por jugar! Recuerda siempre intentar comer un poco de todo: frutas, verduras, carnes y cereales."
+    def mostrar_pregunta(self):
+        self.opcion_seleccionada.set(None)
+        
+        pregunta_data = PREGUNTAS_QUIZ[self.indice_pregunta_actual]
+        self.label_pregunta.config(text=pregunta_data['pregunta'])
+        
+        # Actualizar el contador de progreso (SIN PUNTOS)
+        progreso_texto = f"Pregunta {self.indice_pregunta_actual + 1} de {self.total_preguntas}"
+        self.label_progreso.config(text=progreso_texto)
 
-    # Imprimir los mensajes formateados
-    print(f"*** {titulo_resultado} ***\n")
-    print(mensaje_resultado)
-    print("\n=================================")
+        for i, rb in enumerate(self.radio_buttons):
+            if i < len(pregunta_data['opciones']):
+                # Desempaquetamos la tupla (texto, hecho)
+                texto, valor_hecho = pregunta_data['opciones'][i]
+                rb.config(text=texto, value=valor_hecho, state="normal") 
+            else:
+                rb.config(text="", value="", state="disabled")
+
+    def siguiente_pregunta(self):
+        hecho_seleccionado = self.opcion_seleccionada.get()
+        
+        if not hecho_seleccionado or hecho_seleccionado == "None":
+            messagebox.showwarning("¡Ojo!", "Por favor, selecciona una opción para continuar.")
+            return
+            
+        self.hechos_recopilados.append(hecho_seleccionado)
+        print(f"Hecho añadido: {hecho_seleccionado}") 
+
+        # --- MOSTRAR CONSEJO INTERMEDIO (Ventana llamativa) ---
+        if hecho_seleccionado in CONSEJOS_INTERMEDIOS:
+            titulo_pregunta = PREGUNTAS_QUIZ[self.indice_pregunta_actual]['pregunta'].split('?')[0].split('(')[0]
+            ConsejoWindow(self.root, f"", CONSEJOS_INTERMEDIOS[hecho_seleccionado])
+
+        # Avanzar a la siguiente pregunta
+        self.indice_pregunta_actual += 1
+        
+        if self.indice_pregunta_actual < self.total_preguntas:
+            self.mostrar_pregunta()
+            if self.indice_pregunta_actual == self.total_preguntas - 1:
+                self.boton_siguiente.config(text="¡Ver mi resultado! ✨", bg="#FFC107") # Amarillo para el final
+        else:
+            self.mostrar_resultado()
+
+    # --- FUNCIÓN MOSTRAR_RESULTADO (SIN PUNTOS) ---
+    def mostrar_resultado(self):
+        hechos_finales = motor_inferencia_adelante(self.hechos_recopilados)
+        
+        # Limpiar la pantalla
+        self.label_progreso.pack_forget()
+        self.label_pregunta.pack_forget()
+        self.frame_opciones.pack_forget()
+        self.boton_siguiente.pack_forget()
+        
+        # Lógica de Diagnóstico basada solo en Hechos (Gamificación de Personaje)
+        titulo_resultado = "¡Estos son tus resultados! 📊"
+        mensaje_resultado = ""
+        
+        # Definir el personaje/diagnóstico
+        if 'MENSAJE_FELICITACION' in hechos_finales:
+            titulo_resultado = "¡¡ERES EL CAPITÁN ENERGÍA!! 🦸‍♂️"
+            mensaje_resultado += "¡Tu alimentación es excelente! Eres un **Súper Nutri-Chef** con el poder de la salud. Sigue eligiendo alimentos que te hacen fuerte."
+            
+        elif 'dieta_muy_desbalanceada' in hechos_finales:
+            titulo_resultado = "¡GUERRERO DEL AZÚCAR! 🍬"
+            mensaje_resultado += "Tienes un gran potencial, pero la comida chatarra y el azúcar están ganando la batalla. ¡Es hora de un entrenamiento nutricional!\n\n"
+            mensaje_resultado += "¡No te rindas! Mañana puedes empezar a tomar más agua y probar una verdura nueva."
+            
+        elif 'MENSAJE_ORIENTACION_GENERAL' in hechos_finales:
+            titulo_resultado = "¡DETECTIVE NUTRICIONAL! 🕵️‍♀️"
+            mensaje_resultado += "Vas por buen camino, ¡pero tu misión es mejorar algunos hábitos!\n\n"
+            
+            # Agregar consejos específicos de orientación general
+            if 'MENSAJE_ORIENTACION_AZUCAR' in hechos_finales:
+                mensaje_resultado += "💧 Tienes que beber más agua y menos refresco. ¡Es tu próximo reto!\n"
+            if 'MENSAJE_ORIENTACION_SNACKS' in hechos_finales:
+                mensaje_resultado += "🍎 Cambia las papitas por snacks saludables como la fruta.\n"
+            if 'evita_verduras' in hechos_finales:
+                mensaje_resultado += "🥦 ¡Las verduras son súper poderosas! Intenta comer aunque sea un poquito cada día.\n"
+            
+        else: 
+            titulo_resultado = "¡Buen trabajo! 💪"
+            mensaje_resultado += "Tus hábitos son bastante buenos, ¡pero recuerda que siempre hay algo nuevo y saludable que probar! ¡Sigue explorando el mundo de los alimentos!"
 
 
-# --- 5. PUNTO DE ENTRADA PRINCIPAL ---
-def main():
-    """
-    Función principal que orquesta la ejecución del programa.
-    """
-    # 1. Ejecutar el quiz para obtener los hechos iniciales
-    hechos_iniciales = hacer_quiz()
-    
-    print(f"\nHechos iniciales recopilados: {hechos_iniciales}")
-    
-    # 2. Correr el motor de inferencia
-    hechos_finales = motor_inferencia_adelante(hechos_iniciales)
-    
-    print(f"Hechos finales inferidos: {hechos_finales}")
-    
-    # 3. Mostrar los resultados al usuario
-    mostrar_resultado_consola(hechos_finales)
-    
-    print("\n¡Gracias por jugar! Presiona Enter para salir.")
-    input() # Espera a que el usuario presione Enter para cerrar
+        self.label_titulo.config(text=titulo_resultado, fg="#FF5722") 
+        
+        # Mostrar el mensaje final
+        self.label_resultado = tk.Label(self.root, text=mensaje_resultado, font=self.font_pregunta, 
+                                         bg="#E8F5E9", fg="#212121", wraplength=550) 
+        self.label_resultado.pack(pady=30, padx=20)
+        
+        self.boton_salir = tk.Button(self.root, text="Salir 🚪", font=self.font_pregunta, 
+                                     bg="#FFEB3B", fg="#212121", 
+                                     command=self.root.quit)
+        self.boton_salir.pack(pady=10)
 
 
-# Ejecutar la función principal si el script se corre directamente
+# --- CÓDIGO PARA EJECUTAR LA APLICACIÓN ---
 if __name__ == "__main__":
-    main()
+    main_window = tk.Tk()
+    app = NutriQuizApp(main_window)
+    main_window.mainloop()
