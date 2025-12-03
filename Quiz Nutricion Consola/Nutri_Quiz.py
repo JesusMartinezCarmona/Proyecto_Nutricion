@@ -86,7 +86,7 @@ def motor_inferencia_adelante(hechos_iniciales):
 # Mapeo directo entre preguntas amigables y los hechos lógicos que activan el sistema.
 PREGUNTAS_QUIZ = [
     {
-        'pregunta': '🥵 Tienes MUCHA sed después de jugar fútbol, ¿qué se te antoja?',
+        'pregunta': '🥵 Tienes MUCHA sed después de jugar fútbol, ¿Qué se te antoja?',
         'icono': '💧',
         'opciones': [
             ('¡Agua natural helada!', 'consume_agua_natural', '#4FC3F7'),
@@ -95,7 +95,7 @@ PREGUNTAS_QUIZ = [
         ]
     },
     {
-        'pregunta': '🍽️ Es hora de la comida, ¿qué plato se ve más rico?',
+        'pregunta': '🍽️ Es hora de la comida, ¿Qué plato se ve más rico?',
         'icono': '🍗',
         'opciones': [
             ('Pollo, pescado o carnita', 'come_origen_animal_frecuente', '#FFD54F'), 
@@ -113,7 +113,7 @@ PREGUNTAS_QUIZ = [
         ]
     },
     {
-        'pregunta': '🎒 Recreo: Tienes hambre, ¿qué sacas de tu lonchera?',
+        'pregunta': '🎒 Recreo: Tienes hambre, ¿Qué sacas de tu lonchera?',
         'icono': '🍎',
         'opciones': [
             ('Una fruta picada', 'come_frutas_frecuente', '#FFF176'),
@@ -122,7 +122,7 @@ PREGUNTAS_QUIZ = [
         ]
     },
     {
-        'pregunta': '🍕 Fin de semana de películas, ¿cenamos una pizza o hamburguesas?',
+        'pregunta': '🍕 Fin de semana de películas, ¿Cenamos una pizza o hamburguesas?',
         'icono': '🍔',
         'opciones': [
             ('Casi nunca comemos eso', 'evita_chatarra', '#64B5F6'),
@@ -140,7 +140,7 @@ PREGUNTAS_QUIZ = [
         ]
     },
     {
-        'pregunta': '🧁 Te ofrecen un postre después de comer, ¿cuál eliges?',
+        'pregunta': '🧁 Te ofrecen un postre después de comer, ¿Cuál eliges?',
         'icono': '🍰',
         'opciones': [
             ('Una rebanada de pastel o chocolate', 'prefiere_papas_o_dulces', '#F48FB1'),
@@ -149,7 +149,7 @@ PREGUNTAS_QUIZ = [
         ]
     },
     {
-        'pregunta': '🍜 Hace frío y hay sopa caliente, ¿cuál prefieres?',
+        'pregunta': '🍜 Hace frío y hay sopa caliente, ¿Cuál prefieres?',
         'icono': '🍲',
         'opciones': [
             ('Sopa de verduras o consomé de pollo', 'come_verduras_frecuente', '#A5D6A7'),
@@ -167,7 +167,7 @@ PREGUNTAS_QUIZ = [
         ]
     },
     {
-        'pregunta': '🌮 Vas a una fiesta mexicana, ¿qué pides de comer?',
+        'pregunta': '🌮 Vas a una fiesta mexicana, ¿Qué pides de comer?',
         'icono': '🎉',
         'opciones': [
             ('3 Tacos de guisado o carne', 'come_origen_animal_frecuente', '#FFCC80'),
@@ -455,3 +455,4 @@ if __name__ == "__main__":
     main_window = tk.Tk()
     app = NutriQuizGame(main_window)
     main_window.mainloop()
+
